@@ -65,6 +65,13 @@ python verify_template.py
 
 1. Install dependencies:
    ```bash
+   # Using uv (recommended - faster)
+   uv pip install -r requirements.txt
+   
+   # Or using uv with pyproject.toml
+   uv sync
+   
+   # Or using pip
    pip install -r requirements.txt
    ```
 

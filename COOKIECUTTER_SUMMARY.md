@@ -83,7 +83,9 @@ See `TEMPLATE_SETUP.md` for detailed instructions.
 
 ### As a Template User
 
-1. Install cookiecutter: `pip install cookiecutter`
+1. Install cookiecutter: 
+   - Using uv: `uv pip install cookiecutter`
+   - Or using pip: `pip install cookiecutter`
 2. Generate project: `cookiecutter /path/to/template`
 3. Follow prompts
 4. If directories weren't renamed automatically, rename manually:

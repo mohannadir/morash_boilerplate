@@ -2,8 +2,12 @@ FROM python:3.10
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    gettext nodejs npm \
+    gettext nodejs npm curl \
     && rm -rf /var/lib/apt/lists/*
+
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.cargo/bin:$PATH"
 
 WORKDIR /app
 
@@ -17,9 +21,8 @@ COPY . /app/
 COPY wait-for-it.sh /app/
 RUN chmod +x /app/wait-for-it.sh
 
-# Install Python dependencies
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+# Install Python dependencies with uv
+RUN uv pip install --system -r requirements.txt
 
 # Expose port 8000
 EXPOSE 8000

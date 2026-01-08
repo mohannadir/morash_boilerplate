@@ -2,7 +2,7 @@ FROM python:3.10
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    gettext nodejs npm dos2unix \
+    gettext nodejs npm dos2unix curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -20,12 +20,15 @@ RUN dos2unix /app/wait-for-it.sh && chmod +x /app/wait-for-it.sh
 # Verify permissions
 RUN ls -l /app/
 
-# Install Python dependencies
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.cargo/bin:$PATH"
+
+# Install Python dependencies with uv
+RUN uv pip install --system -r requirements.txt
 
 # Expose port 8000
 EXPOSE 8000
 
 # Command to run the application
-CMD ["./wait-for-it.sh", "postgres:5432", "--", "sh", "-c", "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && daphne -b 0.0.0.0 -p 8000 base.asgi:application"]
+CMD ["./wait-for-it.sh", "postgres:5432", "--", "sh", "-c", "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && daphne -b 0.0.0.0 -p 8000 {{ cookiecutter.project_slug }}.asgi:application"]

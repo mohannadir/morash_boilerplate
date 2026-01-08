@@ -15,10 +15,22 @@ A comprehensive Django project template with authentication, billing, payments, 
 - 🐳 Docker support
 - 🔄 Task queue with Huey
 - 📊 API with JWT authentication
+- ⚡ **UV** for fast Python package management
 
 ## Prerequisites
 
 - Python 3.10+
+- **uv** (recommended) - Fast Python package installer. Install with:
+  ```bash
+  # On macOS and Linux
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  
+  # On Windows (PowerShell)
+  powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+  
+  # Or via pip
+  pip install uv
+  ```
 - Docker and Docker Compose (optional, for containerized setup)
 - Node.js and npm (for Tailwind CSS)
 
@@ -28,6 +40,10 @@ A comprehensive Django project template with authentication, billing, payments, 
 
 1. Install cookiecutter if you haven't already:
    ```bash
+   # Using uv (recommended)
+   uv pip install cookiecutter
+   
+   # Or using pip
    pip install cookiecutter
    ```
 
@@ -75,6 +91,13 @@ After generating your project:
 
 2. **Install dependencies:**
    ```bash
+   # Using uv (recommended - faster)
+   uv pip install -r requirements.txt
+   
+   # Or using uv with pyproject.toml
+   uv sync
+   
+   # Or using pip
    pip install -r requirements.txt
    ```
 
@@ -172,7 +195,8 @@ Configure in `CONFIG/secrets.py`.
 ├── static/                                   # Static files
 ├── media/                                    # Media files
 ├── locale/                                   # Translation files
-└── requirements.txt                          # Python dependencies
+├── pyproject.toml                            # Python project configuration (uv/pip)
+└── requirements.txt                          # Python dependencies (backward compatibility)
 ```
 
 ## Modules
@@ -201,18 +225,24 @@ Configure in `CONFIG/secrets.py`.
 
 ### Running Tests
 ```bash
+# Using uv (recommended)
+uv run python manage.py test
+
+# Or activate virtual environment first
+source .venv/bin/activate  # Linux/macOS
+.venv\Scripts\activate     # Windows
 python manage.py test
 ```
 
 ### Making Migrations
 ```bash
-python manage.py makemigrations
-python manage.py migrate
+uv run python manage.py makemigrations
+uv run python manage.py migrate
 ```
 
 ### Collecting Static Files
 ```bash
-python manage.py collectstatic
+uv run python manage.py collectstatic
 ```
 
 ### Translations

@@ -25,7 +25,11 @@ MANIFEST
 venv/
 ENV/
 env/
-.venv
+.venv/
+
+# UV
+.uv/
+uv.lock
 
 # Django
 *.log
