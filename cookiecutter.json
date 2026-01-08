@@ -11,5 +11,13 @@
     "author_email": "your.email@example.com",
     "description": "A Django project template with authentication, billing, payments, and more",
     "python_version": "3.10",
-    "django_version": "5.0.2"
+    "django_version": "5.0.2",
+    "_copy_without_render": [
+        "*.html",
+        "**/*.html",
+        "**/templates/**/*.html",
+        "{{cookiecutter.main_app_name}}/templates/**/*.html",
+        "modules/**/templates/**/*.html",
+        "theme/templates/**/*.html"
+    ]
 }
