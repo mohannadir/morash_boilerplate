@@ -1,0 +1,45 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Dashboard" %}{% endblock %}
+
+{% block subnav %}
+    {% with active='dashboard' %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+    <div class="flex items-center">
+        <i class="text-2xl text-gray-700 mr-2" data-feather="circle"></i>
+        <h1 class="text-2xl font-semibold text-default">{% trans "Dashboard" %}</h1>
+    </div>
+    <div>
+    <p>
+        <span class="text-gray-500">{% trans "Welcome back" %} 👋</span>
+    </p>
+    </div>
+</div>
+
+<div class="bg-white shadow-sm border rounded-2xl p-8">
+    <div class="flex flex-col items-center justify-center">
+        <div class="w-24 h-24 bg-primary-light rounded-full flex items-center justify-center mb-4 text-primary">
+            <i data-feather="codesandbox"></i>
+        </div>
+        <h3 class="text-lg font-semibold mb-2">{% trans "Kickstart your project" %}</h3>
+        <p class="text-gray-600 text-center mb-6">
+            {% trans "This is a boilerplate project to help you get started with Django, Tailwind CSS, and other popular libraries." %}
+        </p>
+
+        <p>
+            <a href="#" class="bg-primary text-white px-4 py-2 rounded-2xl focus:outline-none text-sm font-semibold block text-center lg:inline-block">
+                {% trans "Read the docs" %} <i class="ml-1 inline" data-feather="arrow-right" width="14px" height="14px"></i>
+            </a>
+        </p>
+    </div>
+</div>
+
+
+{% endblock %}

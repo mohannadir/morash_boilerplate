@@ -1,0 +1,129 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Websockets" %}{% endblock %}
+
+{% block subnav %}
+    {% with active='example_websockets' %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+    <div class="flex items-center">
+        <i class="text-2xl text-gray-700 mr-2" data-feather="message-square"></i>
+        <h1 class="text-2xl font-semibold text-default">{% trans "Websockets" %}</h1>
+    </div>
+    <div>
+    <p class="text-gray-500">
+        {% trans "Websockets are a powerful tool for real-time communication between the client and server." %}
+        <br/>{% trans "<b>Where can I find the template of this page?</b> You can find this template at" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">shipwithdjango/examples/templates/examples/websockets.html</code>.
+        <br/>{% trans "<b>Where can I find the backend logic of this page?</b> You can find the view" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">WebsocketExample</code> {% trans "at" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">shipwithdjango/examples/views.py</code>.
+        <br/><br/>{% trans "<b>Where can I find the websockets logic of this page?</b> You can find the logic for this in" %}  <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">ExampleConsumer</code> {% trans "at" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">shipwithdjango/websockets/views.py</code>.
+    </p>
+    </div>
+</div>
+
+<div class="bg-white shadow-sm border rounded-2xl p-8">
+    <div class="flex flex-col items-center justify-center">
+        <div class="w-24 h-24 bg-primary-light rounded-full flex items-center justify-center mb-4 text-primary">
+            <i data-feather="message-square"></i>
+        </div>
+        <h3 class="text-lg font-semibold mb-2">{% trans "Setup real-time communication" %}</h3>
+        <p class="text-gray-600 text-center mb-6">
+            {% trans "You can use websockets to create real-time communication between the client and server. This example demonstrates how to use websockets in Django." %}
+            <br/>{% trans "By clicking on the buttons below, you can send a ping, a greeting, or an unknown event to the server." %}
+            <br/>{% trans "You can see output from the <i>websockets.js</i> file in the console." %}
+        </p>
+        <div class="flex gap-3">
+            <button type="button" id="send-ping" class="bg-primary text-white px-4 py-2 rounded-2xl focus:outline-none text-sm font-semibold block text-center lg:inline-block">
+                {% trans "Send ping" %}
+            </button>
+            <button type="button" id="send-greeting" class="bg-primary text-white px-4 py-2 rounded-2xl focus:outline-none text-sm font-semibold block text-center lg:inline-block">
+                {% trans "Send a greeting" %}
+            </button>
+            <button type="button" id="send-unknown-event" class="bg-error text-error-light px-4 py-2 rounded-2xl focus:outline-none text-sm font-semibold block text-center lg:inline-block">
+                {% trans "Send an unknown event" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="hidden bg-green-100 rounded-2xl p-4 my-4 text-sm text-green-700" role="alert" id="server-response-wrapper">
+    <i class="w-5 h-5 inline mr-3" data-feather="check-circle"></i>
+    {% trans "Server responsed with" %}:&nbsp;<span class="font-semibold" id="server-response"></span>
+</div>
+
+<div class="hidden bg-red-100 rounded-2xl p-4 my-4 text-sm text-red-700" role="alert" id="server-response-unknown">
+    <i class="w-5 h-5 inline mr-3" data-feather="x-circle"></i>
+    {% trans "Looks like the server doesn't know how to respond to this event." %}
+</div>
+
+{% endblock %}
+{% block scripting %}
+<script>
+
+    function exampleSocketOnOpen(socket) {
+        console.log('Example socket is opened.')
+    }
+
+    function exampleSocketAction(socket, action, data) {
+        console.log('Example socket action:', action, data);
+        if (action === 'show_message') {
+            document.getElementById('server-response').innerText = data.message;
+
+            document.getElementById('server-response-wrapper').classList.remove('hidden');
+            document.getElementById('server-response-wrapper').classList.add('flex');
+
+            setTimeout(function() {
+                document.getElementById('server-response-wrapper').classList.remove('flex');
+                document.getElementById('server-response-wrapper').classList.add('hidden');
+            }, 5000);
+        } else {
+            document.getElementById('server-response-unknown').classList.remove('hidden');
+            document.getElementById('server-response-unknown').classList.add('flex');
+
+            setTimeout(function() {
+                document.getElementById('server-response-unknown').classList.remove('flex');
+                document.getElementById('server-response-unknown').classList.add('hidden');
+            }, 5000);
+        }
+    }
+
+    window.addEventListener('load', function() {
+        let exampleSocket = initWebsocket('examples', exampleSocketOnOpen, exampleSocketAction);
+        document.getElementById('send-ping').addEventListener('click', function() {
+            exampleSocket.send(JSON.stringify({
+                event: 'ping',
+                page_id: WS_PAGE_ID,
+                payload: {
+                    message: 'ping'
+                }
+            }));
+        });
+
+        document.getElementById('send-greeting').addEventListener('click', function() {
+            exampleSocket.send(JSON.stringify({
+                event: 'greeting',
+                page_id: WS_PAGE_ID,
+                payload: {
+                    message: 'Hello, server!'
+                }
+            }));
+        });
+
+        document.getElementById('send-unknown-event').addEventListener('click', function() {
+            exampleSocket.send(JSON.stringify({
+                event: 'unknown_event',
+                page_id: WS_PAGE_ID,
+                payload: {
+                    message: 'This is an unknown event.'
+                }
+            }));
+        });
+
+    });
+</script>
+{% endblock %}

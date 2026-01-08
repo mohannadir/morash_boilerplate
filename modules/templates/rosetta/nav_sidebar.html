@@ -1,0 +1,67 @@
+{% load i18n %}
+
+<div class="relative z-50">
+    <div @click="sidebarDesktopOpen = !sidebarDesktopOpen"
+         hx-get="{% url "admin:toggle_sidebar" %}"
+         hx-swap="none"
+         class="block bg-white border cursor-pointer fixed flex h-6 hidden items-center justify-center rounded-full text-gray-500 top-5 -translate-x-1/2 w-6 z-50 xl:flex dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
+         :class="{'ml-6 rotate-180': !sidebarDesktopOpen, 'ml-72': sidebarDesktopOpen}">
+        <span class="material-symbols-outlined md-16">
+            first_page
+        </span>
+    </div>
+
+    <div @click="sidebarMobileOpen = !sidebarMobileOpen"
+         class="fixed bottom-0 bg-gray-700 flex cursor-pointer flex items-center left-0 mb-2 ml-2 justify-center px-2 py-1 rounded-full shadow-sm text-xs text-white uppercase z-50 xl:hidden"
+        :class="{'ml-72 -translate-x-1/2': sidebarMobileOpen}">
+        {% trans "Menu" %}
+    </div>
+
+    <div :class="{'xl:block': sidebarDesktopOpen, 'xl:hidden': !sidebarDesktopOpen, 'max-xl:fixed': sidebarMobileOpen, 'hidden': !sidebarMobileOpen }">
+        <div class="relative min-w-sidebar transition-width w-sidebar z-30">
+            <nav id="nav-sidebar" class="bg-gray-50 border-r border-gray-200 flex flex-col fixed max-h-screen min-h-screen min-w-sidebar transition-width w-sidebar dark:bg-gray-900 dark:border-gray-800">
+                <div class="border-b border-gray-200 mb-5 py-3 dark:border-gray-800">
+                    <div class="flex font-medium h-10 items-center px-6 text-gray-700 dark:text-gray-200">
+                        <a href="{% url 'rosetta-old-home-redirect' %}" class="bg-gray-900 flex h-8 items-center justify-center rounded-md mr-4 text-white text-xs w-8">
+                            <span class="material-symbols-outlined md-18">translate</span>
+                        </a>
+                        <h1 id="site-name">
+                            <a href="{% url 'rosetta-old-home-redirect' %}">
+                                {% trans "Translation Management" %}
+                            </a>
+                        </h1>
+                    </div>
+                </div>
+                
+                <div class="h-0 flex-grow overflow-auto" data-simplebar>
+
+                    <ol class="px-6">
+                        <li>
+                            <a href="{% url 'admin:index' %}" class="border border-transparent flex h-11 items-center -mx-3 px-3 py-2 rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 hover:dark:text-gray-200">
+                                <span class="material-symbols-outlined md-18 mr-3 w-4.5">
+                                    arrow_back
+                                </span>
+                                <span class="text-sm">
+                                    Back to adminpanel
+                                </span>
+                            </a>
+                        </li>
+                    </ol>
+
+                    <h3 class="font-medium my-3 px-6 text-gray-900 text-sm first:mt-0 dark:text-gray-200">
+                        {% trans "Translations" %}
+                    </h3>
+                    <ol class="px-6">
+                        <li>
+                            <a href="{% url 'rosetta-old-home-redirect' %}" class="border border-transparent flex h-11 items-center -mx-3 px-3 py-2 rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 hover:dark:text-gray-200">
+                                <span class="text-sm">
+                                    {% trans "Language selection" %}
+                                </span>
+                            </a>
+                        </li>
+                    </ol>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>

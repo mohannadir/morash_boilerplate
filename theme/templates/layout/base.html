@@ -1,0 +1,120 @@
+{% load i18n %}
+{% load static tailwind_tags %}
+
+{% get_current_language as LANGUAGE_CODE %}
+{% get_language_info for LANGUAGE_CODE as CURRENT_LANGUAGE %}
+{% get_available_languages as LANGUAGES %}
+{% get_language_info_list for LANGUAGES as languages %}
+
+<html lang="en">
+	<head>
+    <title>
+		{% block title %}{% endblock %} | {{ PLATFORM_NAME }}
+	</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		{% tailwind_css %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" />
+        
+        
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.2/feather.min.js" integrity="sha512-zMm7+ZQ8AZr1r3W8Z8lDATkH05QG5Gm2xc6MlsCdBz9l6oE8Y7IXByMgSm/rdRQrhuHt99HAYfMljBOEZ68q5A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	</head>
+
+	<body x-data="{}" class="min-h-screen bg-slate-50">
+		{% csrf_token %}
+        <div x-data="{ open: false, bottomBarOpen: false }" class="flex flex-col lg:flex-row lg:flex-shrink-0 min-h-screen">
+            <!-- Sidebar -->
+            <div class="flex flex-col w-full lg:w-64 bg-white shadow-sm border">
+                <!-- Top Navigation for Small Screens -->
+                <div class="flex items-center justify-between p-4 bg-white border-b">
+                    <div>
+                        <a href="{% url 'main:dashboard' %}" class="text-lg font-bold">{{ PLATFORM_NAME }} 🚀</a>
+                        <br/><span class="text-[9px] text-gray-500">v{{ PLATFORM_VERSION }}</span>
+                    </div>
+                    <button @click="open = !open" class="text-gray-600 focus:outline-none lg:hidden">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+    
+                <!-- Sidebar for Large Screens & Dropdown for Small Screens -->
+                <div :class="{'block': open, 'hidden': !open}" class="lg:block lg:h-full lg:relative">
+                    <div class="flex flex-col h-full overflow-y-auto">
+                        <div class="p-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-shrink-0 flex items-center justify-center w-12 h-12 bg-primary-light text-white rounded-full">
+                                    <span class="text-md font-bold text-primary">{{ request.user.get_initials }}</span>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h2 class="text-sm font-semibold">{{ request.user.get_short_name|default:'User' }}</h2>
+                                    <p class="text-xs text-gray-600">{{ request.user.email }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% block subnav %}
+                            {% include 'components/subnav.html' %}
+                        {% endblock %}
+
+
+                        <div class="mt-auto">
+                            <div {% if languages|length > 1 %}@click="bottomBarOpen = !bottomBarOpen"{% endif %} class="flex items-center px-4 py-4 cursor-pointer hover:bg-gray-100">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-gray-600">
+                                    <div class="block rounded-2xl m-2 px-4 py-2">
+                                        <span class="inline-block !w-5 !h-5 !bg-center !bg-cover rounded-full flag-icon {% if LANGUAGE_CODE|lower == 'en' %}flag-icon-gb{% else %}flag-icon-{{ LANGUAGE_CODE|lower }}{% endif %}"></span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold">{{ CURRENT_LANGUAGE.name_translated|capfirst }}</p>
+                                    {% if languages|length > 1 %}<p class="text-xs text-gray-600">{% trans "Change language" %}</p>{% endif %}
+                                </div>
+                                {% if languages|length > 1 %}
+                                <svg :class="{'-rotate-90': bottomBarOpen}" class="w-5 h-5 ml-auto text-gray-600 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                                {% endif %}
+                            </div>
+                            {% if languages|length > 1 %}
+                            <div x-show="bottomBarOpen" @click.outside="bottomBarOpen = false" x-transition class="bg-white shadow-lg rounded-2xl w-full absolute bottom-5 left-[260px] z-10">
+                                {% for language in languages %}
+                                    {% if language.code != LANGUAGE_CODE %}
+                                    <a href="#" class="block rounded-2xl m-2 px-4 py-2 text-gray-700 hover:bg-slate-50 set-language font-semibold" data-language="{{ language.code }}">
+                                        <span class="inline-block !w-5 !h-5 !bg-center !bg-cover rounded-full flag-icon {% if language.code|lower == 'en' %}flag-icon-gb{% else %}flag-icon-{{ language.code|lower }}{% endif %}"></span>&nbsp;&nbsp;{{ language.name_local|capfirst }}
+                                    </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Content Area -->
+            <div class="flex-1 p-6 overflow-y-auto">
+                {% include 'components/modal.html' %}
+
+                <div class="container mx-auto p-6">
+                    {% include 'components/platform_alerts.html' %}
+                    {% include 'components/alerts.html' %}
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+
+        <script src="{% url 'javascript-catalog' %}"></script>
+        <script type="module" src="{% static 'shipwithdjango/js/tables.js' %}"></script>
+        <script src="{% static 'shipwithdjango/js/websockets.js' %}"></script>
+        <script src="{% static 'shipwithdjango/js/tasks.js' %}"></script>
+        <script src="{% static 'shipwithdjango/js/i18n.js' %}"></script>
+        <script>
+            feather.replace();
+        </script>
+        {% block scripting %}
+        {% endblock %}
+    </body>
+</html>

@@ -1,0 +1,37 @@
+{% load forms %}
+
+{% if field.use_fieldset %}
+  <fieldset{% if field.help_text and field.auto_id and "aria-describedby" not in field.field.widget.attrs %} aria-describedby="{{ field.auto_id }}_helptext"{% endif %}>
+  {% if field.label %}{{ field.legend_tag }}{% endif %}
+{% else %}
+    <div class="my-3">
+  {% if field.label %}
+    <label for="{{ field.id_for_label }}" class="text-sm font-medium text-gray-700 mb-2">{{ field.label }}</label>
+  {% endif %}
+{% endif %}
+
+{% if field.help_text %}
+    <div class="helptext text-slate-500 text-xs my-2"{% if field.auto_id %} id="{{ field.auto_id }}_helptext"{% endif %}>{{ field.help_text|safe }}</div>
+{% endif %}
+
+{% if field.use_fieldset %}
+  {{ field|add_class:'font-medium text-slate-700 pb-2' }}
+{% else %}
+  {{ field|add_class:'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm' }}
+{% endif %}
+
+
+
+{% if field.errors %}
+    <ul class="errorlist text-red-500 text-xs my-2">
+    {% for error in field.errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+{% if field.use_fieldset %}
+    </fieldset>
+{% else %}
+    </div>
+{% endif %}

@@ -1,0 +1,51 @@
+{% load i18n %}
+
+<thead class="border-b">
+    <tr>
+        <th class="p-2 text-left">
+            <span class="text-xs text-default">{% trans "Amount" %}</span>
+        </th>
+        <th class="p-2 text-left">
+            <span class="text-xs text-default">{% trans "# Before" %}</span>
+        </th>
+        <th class="p-2 text-left">
+            <span class="text-xs text-default">{% trans "# After" %}</span>
+        </th>
+        <th class="p-2 text-left">
+            <span class="text-xs text-default">{% trans "Action" %}</span>
+        </th>
+        <th class="p-2 text-left">
+            <span class="text-xs text-default">{% trans "Date" %}</span>
+        </th>
+    </tr>
+</thead>
+<tbody>
+    {% for credit_action in credit_actions %}
+    <tr class="border-b hover:bg-gray-50">
+        <td class="p-2">
+            <span class="text-base text-default">{{ credit_action.amount }}</span>
+        </td>
+        <td class="p-2">
+            <span class="text-base text-default">{{ credit_action.credits_before }}</span>
+        </td>
+        <td class="p-2">
+            <span class="text-base text-default">{{ credit_action.credits_after }}</span>
+        </td>
+        <td class="p-2">
+            <span class="text-base text-default">{{ credit_action.action }}</span>
+        </td>
+        <td class="p-2">
+            <span class="text-base text-default">{{ credit_action.created_at|date:'Y-m-d H:i' }}</span>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td class="p-3" colspan="3">
+            <div class="flex justify-center">
+                <i class="text-6xl text-gray-600" data-feather="info"></i>
+                &nbsp;&nbsp;<span class="text-gray-600">{% trans "No credits consumed yet" %}</span>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>

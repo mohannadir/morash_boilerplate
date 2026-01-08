@@ -1,0 +1,97 @@
+{% load utils %}
+{% load i18n %}
+
+{% with active_subscription=request.user.get_subscription %}
+<div class="my-6 bg-white shadow-sm border rounded-2xl group">
+    <div class="flex items-center justify-between p-4 border-b">
+        <h2 class="text-lg font-semibold flex items-center">
+            {% trans "Your subscription" %}
+        </h2>
+        {% if active_subscription.can_be_cancelled %}
+            <button @click="$dispatch('opendynamicmodal', { 'url' : '{% url "billing:cancel_subscription" %}' })" class="bg-error text-white px-4 py-2 rounded-2xl focus:outline-none text-sm font-semibold block text-center lg:inline-block">
+                {% trans "Cancel subscription" %}
+            </button>
+        {% elif active_subscription.marked_for_cancellation %}
+            <span class="text-sm text-error">{% trans "Your subscription is cancelled and will end at the end of the current billing period." %}</span>
+        {% endif %}
+    </div>
+
+    <div class="p-4 flex items-center group-hover:bg-slate-50">
+        <div class="flex-shrink-0 w-12 h-12 bg-blue-100 text-blue-600 flex items-center justify-center rounded-2xl">
+            <i data-feather="{{ active_subscription.icon }}" class="w-6 h-6"></i>
+        </div>
+        <div class="ml-4">
+            <h3 class="text-lg font-semibold">{{ active_subscription.name }}</h3>
+            <p class="text-sm text-gray-600">{{ active_subscription.description }}</p>
+            {% if active_subscription.cancels_at %}
+                <small class="text-xs text-gray-500 my-0">{% trans "<b>Cancels</b> at" %} {{ active_subscription.cancels_at|date:"Y-m-d" }}. {% trans "You will be put on the free plan after this date." %}</small>
+            {% elif active_subscription.renews_at and not active_subscription.lifetime and not active.subscription_is_default %}
+                <small class="text-xs text-gray-500 my-0">{% trans "Renews at" %} {{ active_subscription.renews_at|date:"Y-m-d" }}</small>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if active_subscription.included or active_subscription.not_included %}
+    <div class="flex space-x-4 p-4 group-hover:bg-slate-50">
+        {% if active_subscription.included %}
+        <div class="flex-1">
+            <h3 class="text-md font-semibold">{% trans "Included" %}</h3>
+            <ul role="list" class="m-auto text-gray-600">
+                {% for included in active_subscription.included %}
+                <li class="space-x-2">
+                    <span class="text-success font-semibold">&check;</span>
+                    <span>{{ included }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% if active_subscription.not_included %}
+        <div class="flex-1">
+            <h3 class="text-md font-semibold">{% trans "Not included" %}</h3>
+            <ul role="list" class="m-auto text-gray-600">
+                {% for not_included in active_subscription.not_included %}
+                <li class="space-x-2">
+                    <span class="text-error font-semibold">&cross;</span>
+                    <span>{{ not_included }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+
+<div class="mt-12">
+    <h2 class="text-xl font-semibold flex items-center">
+        {% trans "Choose the right subscription for you" %}
+    </h2>
+    <p class="text-sm text-gray-600 mt-2">
+        {% trans "Choose the right subscription for you and enjoy all the benefits of our platform." %}
+    </p>
+</div>
+
+{% for subscription in subscriptions %}
+    {% if subscription.show and subscription.key != active_subscription.key %}
+    <div class="my-4 bg-white shadow-sm border rounded-2xl">
+        <div class="p-4 flex flex-col lg:flex-row items-center hover:bg-slate-50">
+            <div class="flex-shrink-0 w-12 h-12 bg-blue-100 text-blue-600 flex items-center justify-center rounded-2xl">
+                <i data-feather="{{ subscription.icon }}" class="w-6 h-6"></i>
+            </div>
+            <div class="ml-0 lg:ml-4 mt-2 lg:mt-0">
+                <h3 class="text-lg font-semibold text-center lg:text-left">{{ subscription.name }}</h3>
+                <p class="text-sm text-gray-600 text-center lg:text-left">{{ subscription.description }}</p>
+            </div>
+            <div class="mt-2 lg:mt-0 lg:ml-auto w-full lg:w-auto">
+                <a href="{% url 'billing:subscribe_to_subscription' subscription.key %}" class="bg-primary text-white px-4 py-2 rounded-2xl focus:outline-none text-sm font-semibold block text-center lg:inline-block">
+                    {% trans "Get it for" %} {{ subscription.price.currency_symbol }} {{ subscription.price.value|floatformat:2 }} <i class="ml-1 inline" data-feather="arrow-right" width="14px" height="14px"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endfor %}
+
+{% endwith %}

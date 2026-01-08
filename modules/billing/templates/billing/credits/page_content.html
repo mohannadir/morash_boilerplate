@@ -1,0 +1,56 @@
+{% load utils %}
+{% load i18n %}
+
+{% with balance=request.user.credits_balance %}
+
+<div class="my-6 bg-white shadow-sm border rounded-2xl group">
+    <div class="flex items-center justify-between p-4 border-b">
+        <h2 class="text-lg font-semibold flex items-center">
+            {% trans "Your balance" %}
+        </h2>
+    </div>
+
+    <div class="p-4 flex items-center group-hover:bg-slate-50">
+        <div class="flex-shrink-0 w-12 h-12 bg-blue-100 text-blue-600 flex items-center justify-center rounded-2xl">
+            <i data-feather="box" class="w-6 h-6"></i>
+        </div>
+        <div class="ml-4">
+            <h3 class="text-lg font-semibold">{{ balance }} credits</h3>
+            <p class="text-sm text-gray-600">{% trans "You can use these credits for a variety of actions on our platform" %}</p>
+        </div>
+    </div>
+
+
+</div>
+
+<div class="mt-12">
+    <h2 class="text-xl font-semibold flex items-center">
+        {% trans "Buy credits" %}
+    </h2>
+    <p class="text-sm text-gray-600 mt-2">
+        {% trans "Top up your balance with credits and enjoy our services." %}
+    </p>
+</div>
+
+{% for package in credit_packages %}
+    {% if package.show %}
+    <div class="my-4 bg-white shadow-sm border rounded-2xl">
+        <div class="p-4 flex flex-col lg:flex-row items-center hover:bg-slate-50">
+            <div class="flex-shrink-0 w-12 h-12 bg-blue-100 text-blue-600 flex items-center justify-center rounded-2xl">
+                <i data-feather="{{ package.icon }}" class="w-6 h-6"></i>
+            </div>
+            <div class="ml-0 lg:ml-4 mt-2 lg:mt-0">
+                <h3 class="text-lg font-semibold text-center lg:text-left">{{ package.name }}</h3>
+                <p class="text-sm text-gray-600 text-center lg:text-left">{{ package.description }}</p>
+            </div>
+            <div class="mt-2 lg:mt-0 lg:ml-auto w-full lg:w-auto">
+                <a href="{% url 'billing:purchase_credits_package' package.key %}" class="bg-primary text-white px-4 py-2 rounded-2xl focus:outline-none text-sm font-semibold block text-center lg:inline-block">
+                    {% trans "Get it for" %} {{ package.price.currency_symbol }} {{ package.price.value|floatformat:2 }} <i class="ml-1 inline" data-feather="arrow-right" width="14px" height="14px"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endfor %}
+
+{% endwith %}

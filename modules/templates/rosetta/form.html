@@ -1,0 +1,169 @@
+{% extends "rosetta/base.html" %}{% load static %}
+{% load rosetta i18n %}
+
+
+{% block pagetitle %}{{block.super}} - {{rosetta_settings.MESSAGES_SOURCE_LANGUAGE_NAME}} - {{rosetta_i18n_lang_name}} ({{ rosetta_i18n_pofile.percent_translated }}%){% endblock %}
+{% block headertitle %}{{rosetta_settings.MESSAGES_SOURCE_LANGUAGE_NAME}} - {{rosetta_i18n_lang_name}} ({{ rosetta_i18n_pofile.percent_translated }}%){% endblock %}
+
+{% block custom_breadcrumbs %}
+   <li class="text-gray-500 text-xs dark:text-gray-400">
+        {{ rosetta_i18n_lang_name }} <span class="mx-2 text-gray-200 dark:text-gray-600">/</span>
+   </li>
+   <li class="text-gray-500 text-xs dark:text-gray-400">
+        {{ rosetta_i18n_app|title }}
+   </li>
+{% endblock %}
+
+{% block main %}
+<p>
+    <span><a href="{% url 'rosetta-file-list' po_filter=po_filter %}" class="underline hover:text-black">{% trans "Pick another file" %}</a> /
+    <a href="{% url 'rosetta-download-file' po_filter=po_filter lang_id=lang_id idx=idx %}" class="underline hover:text-black">{% trans "Download this catalog" %}</a></span>
+</p>
+
+    <h1 class="text-black my-3">{% blocktrans  %}Translate into {{rosetta_i18n_lang_name}}{% endblocktrans %}</h1>
+
+    <div class="bg-gray-50 flex flex-col justify-between gap-3 mb-4 p-3 rounded-md lg:flex-row dark:bg-gray-800">
+        <div id="toolbar">
+            <form id="changelist-search" action="" method="get">  
+                <div class="bg-white border flex rounded-md overflow-hidden shadow-sm lg:w-64 focus-within:ring focus-within:ring-primary-300 focus-within:border-primary-600 dark:bg-gray-900 dark:border-gray-700 dark:focus-within:border-primary-600 dark:focus-within:ring-primary-700 dark:focus-within:ring-opacity-50">
+                    <input class="font-medium border-0 grow min-w-0 h-9 px-3 text-gray-500 text-sm focus:outline-none dark:bg-gray-900 dark:text-gray-400" type="text" name="query" value="{% if query %}{{query}}{% endif %}" placeholder="Type to search">
+                    <button type="submit" name="s" class="flex items-center px-2 focus:outline-none">
+                        <span class="material-symbols-outlined md-18 text-gray-400 dark:text-gray-500">search</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {% if rosetta_settings.ENABLE_REFLANG %}
+        <div class="actions">
+            <label for="ref-language-selector">{% trans "Reference language" %}:</label>
+            <select class="select-across font-medium border-0 grow min-w-0 h-9 pl-3 pr-10 text-gray-500 text-sm focus:outline-none dark:bg-gray-900 dark:text-gray-400" id="ref-language-selector" onchange="javascript:window.location.href = this.value;">
+                {% for langid, langname in LANGUAGES %}
+                    <option{% if ref_lang == langid %} selected="selected"{% endif %} value="?ref_lang={{ langid }}">{{langname}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
+        <div class="flex flex-col lg:flex-row gap-3">
+            <a href="?{{ filter_query_string_base }}&amp;msg_filter=untranslated" class=" {% if rosetta_i18n_filter == 'untranslated' %}bg-gray-900 text-white{% else %}bg-white text-gray-500 hover:text-gray-700{% endif %}  dark:bg-gray-900 dark:border-gray-700 dark:hover:text-gray-200 dark:text-gray-400 border cursor-pointer flex font-medium group items-center px-3 py-2 rounded-md shadow-sm text-sm md:mt-0">
+                {% trans "Untranslated only" %}
+            </a>
+            <a href="?{{ filter_query_string_base }}&amp;msg_filter=translated" class=" {% if rosetta_i18n_filter == 'translated' %}bg-gray-900 text-white{% else %}bg-white text-gray-500 hover:text-gray-700{% endif %} dark:bg-gray-900 dark:border-gray-700 dark:hover:text-gray-200 dark:text-gray-400 border cursor-pointer flex font-medium group items-center px-3 py-2 rounded-md shadow-sm text-sm md:mt-0">
+                {% trans "Translated only" %}
+            </a>
+            <a href="?{{ filter_query_string_base }}&amp;msg_filter=fuzzy" class=" {% if rosetta_i18n_filter == 'fuzzy' %}bg-gray-900 text-white{% else %}bg-white text-gray-500 hover:text-gray-700{% endif %} dark:bg-gray-900 dark:border-gray-700 dark:hover:text-gray-200 dark:text-gray-400 border cursor-pointer flex font-medium group items-center px-3 py-2 rounded-md shadow-sm text-sm md:mt-0">
+                {% trans "Fuzzy only" %}
+            </a>
+            <a href="?{{ filter_query_string_base }}&amp;msg_filter=all" class=" {% if rosetta_i18n_filter == 'all' %}bg-gray-900 text-white{% else %}bg-white text-gray-500 hover:text-gray-700{% endif %} dark:bg-gray-900 dark:border-gray-700 dark:hover:text-gray-200 dark:text-gray-400 border cursor-pointer flex font-medium group items-center px-3 py-2 rounded-md shadow-sm text-sm md:mt-0">
+                {% trans "All" %}
+            </a>
+        </div>
+     </div>
+    
+
+
+    <div id="changelist" class="module{% if rosetta_i18n_lang_bidi %} rtl{% endif %}">
+        <form method="post" action="" class="results">
+            {% csrf_token %}
+            <table id="result_list" class="rounded-2xl block border border-gray-200 border-spacing-none border-separate text-gray-700 w-full dark:text-gray-400 lg:table">
+                <thead>
+                    <tr>
+                        <th class="align-middle font-medium py-2 text-left text-gray-400 text-sm whitespace-nowrap sortable column-application px-3 lg:table-cell" scope="col"><div class="text">{% trans "Original" %}</div></th>
+                        {% if main_language %}<th class="align-middle font-medium py-2 text-left text-gray-400 text-sm whitespace-nowrap sortable column-application px-3 lg:table-cell" scope="col">{{ main_language }}</th>{% endif %}
+                        <th class="align-middle font-medium py-2 text-left text-gray-400 text-sm whitespace-nowrap sortable column-application px-3 lg:table-cell" scope="col">{{ rosetta_i18n_lang_name }}</th>
+                        <th class="align-middle font-medium py-2 text-left text-gray-400 text-sm whitespace-nowrap sortable column-application px-3 lg:table-cell" scope="col" title="{% trans "Fuzzy entries call for revision by the translator." %}"><input style="display: inline;" id="action-toggle" type="checkbox" class="appearance-none bg-white block border border-gray-300 cursor-pointer h-4 relative rounded shadow-sm w-4 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:after:checked:text-white focus:outline focus:outline-1 focus:outline-offset-2 focus:outline-primary-500 after:absolute after:content-['done'] after:!flex after:h-4 after:items-center after:justify-center after:leading-none after:material-symbols-outlined after:-ml-px after:-mt-px after:!text-sm after:text-white after:transition-all after:w-4 after:dark:text-gray-700 checked:bg-primary-600 checked:border-primary-600 checked:transition-all checked:hover:border-primary-600 action-select"> {% trans "Fuzzy" %}</th>
+                        {% if rosetta_settings.SHOW_OCCURRENCES %}<th class="align-middle font-medium py-2 text-left text-gray-400 text-sm whitespace-nowrap sortable column-application px-3 lg:table-cell" scope="col">{% trans "Occurrences(s)" %}</th>{% endif %}
+                    </tr>
+                </thead>
+                <tbody class="block lg:table-row-group">
+                    {% for message in rosetta_messages %}
+                    <tr class="block border mb-3 rounded-md shadow-sm lg:table-row lg:border-none lg:mb-0 lg:shadow-none dark:border-gray-800 {% cycle 'row1' 'row2' %}">
+                        {% if message.msgid_plural %}
+                            <td class="original plural align-middle flex border-t border-gray-200 font-normal gap-4 min-w-0 overflow-hidden px-3 py-2 text-left text-gray-500 text-sm before:flex before:capitalize before:content-[attr(data-label)] before:items-center before:mr-auto before:text-gray-500 first:border-t-0 dark:before:text-gray-400 dark:text-gray-400 lg:before:hidden lg:first:border-t lg:py-3 lg:table-cell dark:border-gray-800">
+                                <div class="plural-container">
+                                    <span class="part">{{message.msgid|format_message|linebreaksbr}}</span>
+                                    <span class="part">{{message.msgid_plural|format_message|linebreaksbr}}</span>
+                                </div>
+                            </td>
+                            <td class="translation align-middle flex border-t border-gray-200 font-normal gap-4 min-w-0 overflow-hidden px-3 py-2 text-left text-gray-500 text-sm before:flex before:capitalize before:content-[attr(data-label)] before:items-center before:mr-auto before:text-gray-500 first:border-t-0 dark:before:text-gray-400 dark:text-gray-400 lg:before:hidden lg:first:border-t lg:py-3 lg:table-cell dark:border-gray-800">
+                                {% for k, msgstr in message.msgstr_plural.items %}
+                                    <label for="m_{{message.md5hash}}_{{k}}">{{k}}:</label>
+                                    <textarea class="border-slate-200 rounded-md shadow-sm font-medium border grow min-w-0 h-9 px-3 text-gray-500 text-sm focus:outline-none dark:bg-gray-900 dark:text-gray-400" rows="{{message.msgid|format_message|lines_count}}" cols="40" id="m_{{message.md5hash}}_{{k}}" name="m_{{message.md5hash}}_{{k}}" tabindex="{% increment tab_idx %}">{{msgstr}}</textarea>
+                                {% endfor %}
+                            </td>
+                        {% else %}
+                            <td class="original align-middle flex border-t border-gray-200 font-normal gap-4 min-w-0 overflow-hidden px-3 py-2 text-left text-gray-500 text-sm before:flex before:capitalize before:content-[attr(data-label)] before:items-center before:mr-auto before:text-gray-500 first:border-t-0 dark:before:text-gray-400 dark:text-gray-400 lg:before:hidden lg:first:border-t lg:py-3 lg:table-cell dark:border-gray-800">
+                                {% if rosetta_settings.ENABLE_REFLANG %}
+                                <span class="message">{{ message.ref_txt|format_message|linebreaksbr }}</span>
+                                {% else %}
+                                <span class="message">{{ message.msgid|format_message|linebreaksbr }}</span>
+                                {% endif %}
+                            </td>
+                            {% if main_language %}<td class="original align-middle flex border-t border-gray-200 font-normal gap-4 min-w-0 overflow-hidden px-3 py-2 text-left text-gray-500 text-sm before:flex before:capitalize before:content-[attr(data-label)] before:items-center before:mr-auto before:text-gray-500 first:border-t-0 dark:before:text-gray-400 dark:text-gray-400 lg:before:hidden lg:first:border-t lg:py-3 lg:table-cell dark:border-gray-800">{{ message.main_lang|format_message|linebreaksbr }}</td>{% endif %}
+                            <td class="translation align-middle flex border-t border-gray-200 font-normal gap-4 min-w-0 overflow-hidden px-3 py-2 text-left text-gray-500 text-sm before:flex before:capitalize before:content-[attr(data-label)] before:items-center before:mr-auto before:text-gray-500 first:border-t-0 dark:before:text-gray-400 dark:text-gray-400 lg:before:hidden lg:first:border-t lg:py-3 lg:table-cell dark:border-gray-800">
+                                <textarea class="border-slate-200 rounded-md shadow-sm font-medium border grow min-w-0 h-9 px-3 text-gray-500 text-sm focus:outline-none dark:bg-gray-900 dark:text-gray-400" rows="{{message.msgid|format_message|lines_count}}" cols="40" name="m_{{message.md5hash}}" tabindex="{% increment tab_idx %}">{{message.msgstr}}</textarea>
+                                {% if rosetta_settings.ENABLE_TRANSLATION_SUGGESTIONS %}<a href="#" class="suggest">{% trans "suggest" %}</a>{% endif %}
+                            </td>
+                        {% endif %}
+                            <td class="c align-middle flex border-t border-gray-200 font-normal gap-4 min-w-0 overflow-hidden px-3 py-2 text-left text-gray-500 text-sm before:flex before:capitalize before:content-[attr(data-label)] before:items-center before:mr-auto before:text-gray-500 first:border-t-0 dark:before:text-gray-400 dark:text-gray-400 lg:before:hidden lg:first:border-t lg:py-3 lg:table-cell dark:border-gray-800">
+                                <input class="appearance-none bg-white block border border-gray-300 cursor-pointer h-4 relative rounded shadow-sm w-4 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:after:checked:text-white focus:outline focus:outline-1 focus:outline-offset-2 focus:outline-primary-500 after:absolute after:content-['done'] after:!flex after:h-4 after:items-center after:justify-center after:leading-none after:material-symbols-outlined after:-ml-px after:-mt-px after:!text-sm after:text-white after:transition-all after:w-4 after:dark:text-gray-700 checked:bg-primary-600 checked:border-primary-600 checked:transition-all checked:hover:border-primary-600 action-select" type="checkbox" name="f_{{message.md5hash}}" value="1" {% if message|is_fuzzy %}checked="checked"{% endif %} />
+                            </td>
+                            {% if rosetta_settings.SHOW_OCCURRENCES %}
+                            <td class="location align-middle flex border-t border-gray-200 font-normal gap-4 min-w-0 overflow-hidden px-3 py-2 text-left text-gray-500 text-sm before:flex before:capitalize before:content-[attr(data-label)] before:items-center before:mr-auto before:text-gray-500 first:border-t-0 dark:before:text-gray-400 dark:text-gray-400 lg:before:hidden lg:first:border-t lg:py-3 lg:table-cell dark:border-gray-800">
+                                {% for fn,lineno in message.occurrences %}
+                                    <code{% if forloop.counter|gt:"3" %} class="hide"{% endif %}>{{ fn }}{% if lineno %}:{{lineno}}{% endif %}</code>
+                                {% endfor %}
+                                {% if message.occurrences|length|gt:"3" %}
+                                    <a href="#">&hellip; ({% blocktrans count message.occurrences|length|minus:"3" as more_count %}{{more_count}} more{% plural %}{{more_count}} more{% endblocktrans %})</a>
+                                {% endif %}
+                                {% if message.msgctxt or message.comment %}
+                                    <span class="context">
+                                    {% trans "Context hint" %}:
+                                    {% if message.msgctxt %}
+                                        {{message.msgctxt|safe}}
+                                    {% endif %}
+                                    {% if message.msgctxt and message.comment %}<br/>{% endif %}
+                                    {% if message.comment %}
+                                        {{message.comment|safe}}
+                                    {% endif %}
+                                    </span>
+                                {% endif %}
+                            </td>{% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <div class="mt-3 submit-row bg-gray-50 flex flex-col justify-between align-middle gap-3 mb-4 p-3 rounded-md lg:flex-row dark:bg-gray-800">
+                {% if query %}
+                    <input type="hidden" name="query" value="{{query}}"  />
+                {% endif %}
+                <input type="submit" class="hover:bg-gray-900 hover:text-white bg-white text-gray-500 dark:bg-gray-900 dark:border-gray-700 dark:hover:text-gray-200 dark:text-gray-400 border cursor-pointer flex font-medium group items-center px-3 py-2 rounded-md shadow-sm text-sm md:mt-0" name="_next" value="{% trans "Save and translate next block" %}" tabindex="{% increment tab_idx %}"/>
+
+                <div class="flex gap-3 items-center">
+                {% if needs_pagination %}
+                    {% trans "Skip to page:" %}
+                        {% for i in page_range %}
+                            {% if i == '...' %}
+                                <span class="space">{{ i }}</span>
+                            {% else %}
+                                {% if i == page %}
+                                    <span class="bg-gray-900 text-white  dark:bg-gray-900 dark:border-gray-700 dark:hover:text-gray-200 dark:text-gray-400 border cursor-pointer flex font-medium group items-center px-3 py-2 rounded-md shadow-sm text-sm md:mt-0">{{i}}</span>
+                                {% else %}
+                                    <a href="?{{ pagination_query_string_base }}&amp;page={{i}}" class="hover:bg-gray-900 hover:text-white bg-white text-gray-500 dark:bg-gray-900 dark:border-gray-700 dark:hover:text-gray-200 dark:text-gray-400 border cursor-pointer flex font-medium group items-center px-3 py-2 rounded-md shadow-sm text-sm md:mt-0">{{i}}</a>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                {% endif %}
+                </div>
+
+                {% with paginator.object_list|length as hits %}
+                <div class="flex justify-end items-center">
+                    <strong>{% blocktrans count rosetta_i18n_pofile|length as message_number %}{{hits}}/{{message_number}} message{% plural %}{{hits}}/{{message_number}} messages{% endblocktrans %}</strong>
+                </div>
+                {% endwith %}
+            </div>
+        </form>
+    </div>
+{% endblock %}

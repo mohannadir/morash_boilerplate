@@ -1,0 +1,15 @@
+{% load i18n %}
+
+{% if request.user.is_impersonate %}
+    <div class="flex bg-yellow-100 rounded-2xl p-4 mb-4 text-sm text-yellow-700 items-center" role="alert">
+        <i class="w-5 h-5 inline mr-3" data-feather="alert-circle"></i>
+        <div>
+            {% trans "You are currently impersonating" %} <span class="font-bold">{{ request.user }}</span>. {% trans "Any action you do will be done as this user." %}
+        </div>
+        <div class="ml-auto">
+            <a href="{% url 'impersonate-stop' %}" class="bg-white text-black px-4 py-2 rounded-2xl focus:outline-none text-sm font-semibold block text-center">
+                {% trans "Stop impersonating" %}
+            </a>
+        </div>
+    </div>
+{% endif %}

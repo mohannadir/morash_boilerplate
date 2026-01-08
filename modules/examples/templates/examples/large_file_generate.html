@@ -1,0 +1,95 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Generate large files" %}{% endblock %}
+
+{% block subnav %}
+    {% with active='example_large_files' %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+    <div class="flex items-center">
+        <i class="text-2xl text-gray-700 mr-2" data-feather="download"></i>
+        <h1 class="text-2xl font-semibold text-default">{% trans "Generate large files" %}</h1>
+    </div>
+    <div>
+    <p class="text-gray-500">
+        {% trans "This example demonstrates how to generate large files in Django using Huey, the task queue." %}
+        <br/>{% trans "<b>Where can I find the template of this page?</b> You can find this template at" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">shipwithdjango/examples/templates/examples/large_file_generate.html</code>.
+        <br/>{% trans "<b>Where can I find the backend logic of this page?</b> You can find the view" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">LargeFileGenerateExample</code> {% trans "at" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">shipwithdjango/examples/views.py</code>.
+        <br/><br/>{% trans "<b>Where can I find the task logic of this page?</b> You can find the logic for this in" %}  <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">generate_large_file</code> {% trans "at" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">shipwithdjango/examples/tasks.py</code>.
+    </p>
+    </div>
+</div>
+
+<div class="bg-white shadow-sm border rounded-2xl p-8">
+    <div class="flex flex-col items-center justify-center">
+        <div class="w-24 h-24 bg-primary-light rounded-full flex items-center justify-center mb-4 text-primary">
+            <i data-feather="download"></i>
+        </div>
+        <h3 class="text-lg font-semibold mb-2">{% trans "Generate large files and download them" %}</h3>
+        <p class="text-gray-600 text-center mb-6">
+            {% trans "This example demonstrates how to generate large files in Django using Huey, the task queue. You can generate a large file by clicking on the button below.<br/>The file will be generated in the background, and will be downloaded automatically once it's ready." %}
+        </p>
+        <div class="flex gap-3">
+            <button type="button" id="start-task" class="bg-primary text-white px-4 py-2 rounded-2xl focus:outline-none text-sm font-semibold block text-center lg:inline-block">
+                {% trans "Generate large file" %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="hidden bg-blue-100 rounded-2xl p-4 my-4 text-sm text-blue-700" role="alert" id="file-generating-message">
+    <i class="w-5 h-5 inline mr-3 animate-spin" data-feather="loader"></i>
+    <div>
+        {% trans "The file is being generated. It will start downloading automatically once it's ready." %}
+    </div>
+</div>
+
+<div class="hidden bg-green-100 rounded-2xl p-4 my-4 text-sm text-green-700" role="alert" id="file-ready-message">
+    <i class="w-5 h-5 inline mr-3 " data-feather="check-circle"></i>
+    <div>
+        {% trans "The file is ready! It will start downloading automatically." %}
+    </div>
+</div>
+
+{% endblock %}
+{% block scripting %}
+<script>
+    window.addEventListener('load', function() {
+
+        document.getElementById('start-task').addEventListener('click', function() {
+            fetch('/swd/examples/file-generate/start/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+
+                // Show the file generating message
+                document.getElementById('file-generating-message').classList.remove('hidden');
+                document.getElementById('file-generating-message').classList.add('flex');
+                document.getElementById('start-task').classList.add('hidden');
+
+                checkFileTaskStatus(data.task_id, function() {
+                    // Success callback, show the file ready message and hide the file generating message
+                    document.getElementById('file-generating-message').classList.add('hidden');
+                    document.getElementById('file-generating-message').classList.remove('flex');
+                    document.getElementById('file-ready-message').classList.remove('hidden');
+                    document.getElementById('file-ready-message').classList.add('flex');
+                    document.getElementById('start-task').classList.remove('hidden');
+                });
+            });
+        });
+    
+    });
+</script>
+{% endblock %}

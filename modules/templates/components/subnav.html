@@ -1,0 +1,22 @@
+{% load i18n %}
+
+<nav class="px-4 pb-4">
+
+    {% for section in GLOBAL_SUBNAV %}
+        {% if section.show_title %}
+        <div class="mt-4 border-t"></div>
+        <div class="px-4 py-2 mt-2 text-sm font-semibold text-gray-700">
+            {{ section.name }}
+        </div>
+        {% endif %}
+        {% for subnav_item in section.items %}
+            <a href="{% if subnav_item.url_name %}{% url subnav_item.url_name %}{% else %}#{% endif %}" class="flex items-center px-4 py-2 mt-2 text-sm font-semibold  {% if active == subnav_item.key %}bg-primary-light text-primary{% else %}text-gray-700 hover:bg-slate-50{% endif %} rounded-2xl">
+                {% if subnav_item.icon %}
+                    <i class="w-5 h-5 mr-2 !flex items-center" data-feather="{{ subnav_item.icon }}"></i>
+                {% endif %}
+
+                {{ subnav_item.name }}
+            </a>
+        {% endfor %}
+    {% endfor %}
+</nav>

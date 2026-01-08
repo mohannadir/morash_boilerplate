@@ -1,0 +1,46 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "PDF export" %}{% endblock %}
+
+{% block subnav %}
+    {% with active='example_pdf' %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+    <div class="flex items-center">
+        <i class="text-2xl text-gray-700 mr-2" data-feather="file-text"></i>
+        <h1 class="text-2xl font-semibold text-default">{% trans "PDF export" %}</h1>
+    </div>
+    <div>
+    <p class="text-gray-500">
+        {% trans "Useful for generating reports or sharing data with users." %}
+        <br/>{% trans "<b>Where can I find the template of this page?</b> You can find this template at" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">shipwithdjango/examples/templates/examples/pdf.html</code>.
+        <br/>{% trans "<b>Where can I find the backend logic of this page?</b> You can find the view" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">PDFExample</code> {% trans "at" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">shipwithdjango/examples/views.py</code>.
+    </p>
+    </div>
+</div>
+
+<div class="bg-white shadow-sm border rounded-2xl p-8">
+    <div class="flex flex-col items-center justify-center">
+        <div class="w-24 h-24 bg-primary-light rounded-full flex items-center justify-center mb-4 text-primary">
+            <i data-feather="file"></i>
+        </div>
+        <h3 class="text-lg font-semibold mb-2">{% trans "Export data to a PDF file" %}</h3>
+        <p class="text-gray-600 text-center mb-6">
+            {% trans "You can easily generate a PDF file from any HTML template and use Django templating to fill in the data. This is useful for generating reports or sharing data with users." %}
+        </p>
+        <p>
+            <a href="{% url 'examples:pdf_export' %}" class="bg-primary text-white px-4 py-2 rounded-2xl focus:outline-none text-sm font-semibold block text-center lg:inline-block">
+                {% trans "Download PDF example" %}
+            </a>
+        </p>
+
+    </div>
+</div>
+
+{% endblock %}

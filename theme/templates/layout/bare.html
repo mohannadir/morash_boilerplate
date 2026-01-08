@@ -1,0 +1,27 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+		{% block title %}{% endblock %} | {{ PLATFORM_NAME }}
+	</title>
+	{% tailwind_css %}
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.2/feather.min.js" integrity="sha512-zMm7+ZQ8AZr1r3W8Z8lDATkH05QG5Gm2xc6MlsCdBz9l6oE8Y7IXByMgSm/rdRQrhuHt99HAYfMljBOEZ68q5A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gradient-to-tl from-primary-light to-primary-dark">
+	{% csrf_token %}
+    <div class="w-full max-w-sm mx-auto bg-white p-8 rounded-2xl shadow-lg md:h-auto xxs:h-screen">
+        {% block content %}
+		{% endblock %}
+    </div>
+
+	<script>
+		feather.replace();
+	</script>
+	{% block scripting %}
+	{% endblock %}
+</body>
+</html>

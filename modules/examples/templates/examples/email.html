@@ -1,0 +1,48 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Email" %}{% endblock %}
+
+{% block subnav %}
+    {% with active='example_email' %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+    <div class="flex items-center">
+        <i class="text-2xl text-gray-700 mr-2" data-feather="mail"></i>
+        <h1 class="text-2xl font-semibold text-default">{% trans "Email" %}</h1>
+    </div>
+    <div>
+    <p class="text-gray-500">
+        {% trans "Email is a powerful tool for sending messages to users." %}
+        <br/>{% trans "<b>Where can I find the template of this page?</b> You can find this template at" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">shipwithdjango/examples/templates/examples/email.html</code>.
+        <br/>{% trans "<b>Where can I find the backend logic of this page?</b> You can find the view" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">EmailExample</code> {% trans "at" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">shipwithdjango/examples/views.py</code>.
+    </p>
+    </div>
+</div>
+
+<div class="bg-white shadow-sm border rounded-2xl p-8">
+    <div class="flex flex-col items-center justify-center">
+        <div class="w-24 h-24 bg-primary-light rounded-full flex items-center justify-center mb-4 text-primary">
+            <i data-feather="send"></i>
+        </div>
+        <h3 class="text-lg font-semibold mb-2">{% trans "Send a test email" %}</h3>
+        <p class="text-gray-600 text-center mb-6">
+            {% trans "See how email looks like in your inbox. Ship with Django comes with a pre-made HTML email template." %}
+            <br/>{% trans "You can choose to send emails asynchronously using the task queue or synchronously." %}
+            <br/>{% trans "Be sure to set your email configuration first in" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">CONFIG/emails.py</code>.
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.to_email.as_field_group }}
+            <button type="submit" class="w-full bg-primary text-white py-2 rounded-2xl focus:outline-none font-semibold">{% trans "Send test email" %}</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% load i18n %}
+
+<thead class="border-b">
+    <tr>
+        <th class="p-2 text-left">
+            <span class="text-xs text-default">{% trans "Number" %}</span>
+        </th>
+        <th class="p-2 text-left">
+            <span class="text-xs text-default">{% trans "Date" %}</span>
+        </th>
+        <th class="p-2">
+        </th>
+    </tr>
+</thead>
+<tbody>
+    {% for invoice in invoices %}
+    <tr class="border-b hover:bg-gray-50">
+        <td class="p-2">
+            <span class="text-base text-default">{{ invoice.number }}</span>
+        </td>
+        <td class="p-2">
+            <span class="text-base text-default">{{ invoice.created_at|date:'Y-m-d H:i' }}</span>
+        </td>
+        <td class="p-2 flex justify-end">
+            {% if invoice.hosted_invoice_url %}
+            <a href="{{ invoice.hosted_invoice_url }}" target="_blank" class="bg-primary text-white px-4 py-2 rounded-2xl focus:outline-none text-sm font-semibold block text-center lg:inline-block">
+                {% trans "See details" %} <i class="ml-1 inline" data-feather="arrow-right" width="14px" height="14px"></i>
+            </a>
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td class="p-3" colspan="3">
+            <div class="flex justify-center">
+                <i class="text-6xl text-gray-600" data-feather="info"></i>
+                &nbsp;&nbsp;<span class="text-gray-600">{% trans "No invoices found" %}</span>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>

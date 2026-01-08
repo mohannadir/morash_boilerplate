@@ -1,0 +1,86 @@
+{% extends "rosetta/base.html" %}
+{% load i18n static %}
+
+{% block pagetitle %}{{block.super}} - {% trans "Language selection" %}{% endblock %}
+{% block headertitle %}{% trans "Language selection" %}{% endblock %}
+
+{% block custom_breadcrumbs %}
+   <li class="text-gray-500 text-xs dark:text-gray-400">{% trans "Language selection" %}</li>
+{% endblock %}
+
+{% block main %}
+    <div class="bg-gray-50 flex flex-col gap-3 mb-4 p-3 rounded-md lg:flex-row dark:bg-gray-800">                
+        <a href="{% url 'rosetta-file-list' po_filter='project' %}" class=" {% if po_filter == 'project' %}bg-gray-900 text-white{% else %}bg-white text-gray-500 hover:text-gray-700{% endif %}  dark:bg-gray-900 dark:border-gray-700 dark:hover:text-gray-200 dark:text-gray-400 border cursor-pointer flex font-medium group items-center px-3 py-2 rounded-md shadow-sm text-sm md:mt-0">
+            {% trans "Project" %}
+        </a>
+        <a href="{% url 'rosetta-file-list' po_filter='third-party' %}" class=" {% if po_filter == 'third-party' %}bg-gray-900 text-white{% else %}bg-white text-gray-500 hover:text-gray-700{% endif %} dark:bg-gray-900 dark:border-gray-700 dark:hover:text-gray-200 dark:text-gray-400 border cursor-pointer flex font-medium group items-center px-3 py-2 rounded-md shadow-sm text-sm md:mt-0">
+            {% trans "Third-party" %}
+        </a>
+        <a href="{% url 'rosetta-file-list' po_filter='django' %}" class=" {% if po_filter == 'django' %}bg-gray-900 text-white{% else %}bg-white text-gray-500 hover:text-gray-700{% endif %} dark:bg-gray-900 dark:border-gray-700 dark:hover:text-gray-200 dark:text-gray-400 border cursor-pointer flex font-medium group items-center px-3 py-2 rounded-md shadow-sm text-sm md:mt-0">
+            {% trans "Django" %}
+        </a>
+        <a href="{% url 'rosetta-file-list' po_filter='all' %}" class=" {% if po_filter == 'all' %}bg-gray-900 text-white{% else %}bg-white text-gray-500 hover:text-gray-700{% endif %} dark:bg-gray-900 dark:border-gray-700 dark:hover:text-gray-200 dark:text-gray-400 border cursor-pointer flex font-medium group items-center px-3 py-2 rounded-md shadow-sm text-sm md:mt-0">
+            {% trans "All" %}
+        </a>
+    </div>
+
+    {% if has_pos %}
+        {% for lid,language,pos in languages %}
+            {% if pos %}
+                <div class="module">
+                    <h2 class="text-black my-3">{{language}}</h2>
+                    <table id="result_list" class="rounded-2xl block border border-gray-200 border-spacing-none border-separate text-gray-700 w-full dark:text-gray-400 lg:table">
+                        <thead>
+                            <tr>
+                                <th class="align-middle font-medium py-2 text-left text-gray-400 text-sm whitespace-nowrap sortable column-application px-3 lg:table-cell" scope="col">
+                                    {% trans "Application" %}</a>
+                                </th>
+                                <th class="align-middle font-medium py-2 text-left text-gray-400 text-sm whitespace-nowrap sortable column-progress r px-3 lg:table-cell" scope="col">
+                                    {% trans "Progress" %}
+                                </th>
+                                <th class="align-middle font-medium py-2 text-left text-gray-400 text-sm whitespace-nowrap sortable column-messages r px-3 lg:table-cell" scope="col">
+                                    {% trans "Messages" %}
+                                </th>
+                                <th class="align-middle font-medium py-2 text-left text-gray-400 text-sm whitespace-nowrap sortable column-translated r px-3 lg:table-cell" scope="col">
+                                    {% trans "Translated" %}
+                                </th>
+                                <th class="align-middle font-medium py-2 text-left text-gray-400 text-sm whitespace-nowrap sortable column-fuzzy r px-3 lg:table-cell" scope="col" title="{% trans "Fuzzy entries call for revision by the translator." %}">
+                                    {% trans "Fuzzy" %}
+                                </th>
+                                <th class="align-middle font-medium py-2 text-left text-gray-400 text-sm whitespace-nowrap sortable column-obsolete r px-3 lg:table-cell" scope="col">
+                                    {% trans "Obsolete" %}
+                                </th>
+                                <th class="align-middle font-medium py-2 text-left text-gray-400 text-sm whitespace-nowrap sortable column-file px-3 lg:table-cell" scope="col">
+                                    {% trans "File" %}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="block lg:table-row-group">
+                            {% for app, path, po in pos %}
+                            <tr class="block border mb-3 rounded-md shadow-sm lg:table-row lg:border-none lg:mb-0 lg:shadow-none dark:border-gray-800 {% cycle 'row1' 'row2' %}">
+                                <td class="field-application align-middle flex border-t border-gray-200 font-normal gap-4 min-w-0 overflow-hidden px-3 py-2 text-left text-gray-500 text-sm before:flex before:capitalize before:content-[attr(data-label)] before:items-center before:mr-auto before:text-gray-500 first:border-t-0 dark:before:text-gray-400 dark:text-gray-400 lg:before:hidden lg:first:border-t lg:py-3 lg:table-cell dark:border-gray-800" data-label="application">
+                                    <a href="{% url 'rosetta-form' po_filter=po_filter lang_id=lid idx=forloop.counter0 %}" class="text-gray-600 truncate dark:text-gray-300 font-semibold underline">{{ app|title }}</a>
+                                </td>
+                                <td class="field-progress align-middle flex border-t border-gray-200 font-normal gap-4 min-w-0 overflow-hidden px-3 py-2 text-left text-gray-500 text-sm before:flex before:capitalize before:content-[attr(data-label)] before:items-center before:mr-auto before:text-gray-500 first:border-t-0 dark:before:text-gray-400 dark:text-gray-400 lg:before:hidden lg:first:border-t lg:py-3 lg:table-cell dark:border-gray-800" data-label="progress">{{ po.percent_translated }}%</td>
+                                <td class="field-messages align-middle flex border-t border-gray-200 font-normal gap-4 min-w-0 overflow-hidden px-3 py-2 text-left text-gray-500 text-sm before:flex before:capitalize before:content-[attr(data-label)] before:items-center before:mr-auto before:text-gray-500 first:border-t-0 dark:before:text-gray-400 dark:text-gray-400 lg:before:hidden lg:first:border-t lg:py-3 lg:table-cell dark:border-gray-800" data-label="messages">
+                                    {% with po.untranslated_entries|length as len_untranslated_entries %}
+                                    {{ po.translated_entries|length|add:len_untranslated_entries }}
+                                    {% endwith %}
+                                </td>
+                                <td class="field-translated align-middle flex border-t border-gray-200 font-normal gap-4 min-w-0 overflow-hidden px-3 py-2 text-left text-gray-500 text-sm before:flex before:capitalize before:content-[attr(data-label)] before:items-center before:mr-auto before:text-gray-500 first:border-t-0 dark:before:text-gray-400 dark:text-gray-400 lg:before:hidden lg:first:border-t lg:py-3 lg:table-cell dark:border-gray-800" data-label="translated">{{ po.translated_entries|length }}</td>
+                                <td class="field-fuzzy align-middle flex border-t border-gray-200 font-normal gap-4 min-w-0 overflow-hidden px-3 py-2 text-left text-gray-500 text-sm before:flex before:capitalize before:content-[attr(data-label)] before:items-center before:mr-auto before:text-gray-500 first:border-t-0 dark:before:text-gray-400 dark:text-gray-400 lg:before:hidden lg:first:border-t lg:py-3 lg:table-cell dark:border-gray-800" data-label="fuzzy">{{ po.fuzzy_entries|length }}</td>
+                                <td class="field-obsolete align-middle flex border-t border-gray-200 font-normal gap-4 min-w-0 overflow-hidden px-3 py-2 text-left text-gray-500 text-sm before:flex before:capitalize before:content-[attr(data-label)] before:items-center before:mr-auto before:text-gray-500 first:border-t-0 dark:before:text-gray-400 dark:text-gray-400 lg:before:hidden lg:first:border-t lg:py-3 lg:table-cell dark:border-gray-800" data-label="obsolete">{{ po.obsolete_entries|length }}</td>
+                                <td class="field-file align-middle flex border-t border-gray-200 font-normal gap-4 min-w-0 overflow-hidden px-3 py-2 text-left text-gray-500 text-sm before:flex before:capitalize before:content-[attr(data-label)] before:items-center before:mr-auto before:text-gray-500 first:border-t-0 dark:before:text-gray-400 dark:text-gray-400 lg:before:hidden lg:first:border-t lg:py-3 lg:table-cell dark:border-gray-800" data-label="file">{{ path }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <h1>{% trans "Nothing to translate!" %}</h1>
+        <p>{% trans "You haven't specified any languages in your settings file, or haven't yet generated a batch of translation catalogs." %}</p>
+        <p>{% blocktrans with "http://docs.djangoproject.com/en/dev/topics/i18n/#topics-i18n" as i18n_doc_link  %}Please refer to <a href="{{i18n_doc_link}}">Django's I18N documentation</a> for a guide on how to set up internationalization for your project.{% endblocktrans %}</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Credits" %}{% endblock %}
+
+{% block subnav %}
+    {% with active='example_credits' %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+    <div class="flex items-center">
+        <i class="text-2xl text-gray-700 mr-2" data-feather="box"></i>
+        <h1 class="text-2xl font-semibold text-default">{% trans "Credits" %}</h1>
+    </div>
+    <div>
+    <p class="text-gray-500">
+        {% trans "Let users buy credits and use them for a variety of actions on your platform." %}
+        <br/>{% trans "<b>Where can I find the template of this page?</b> You can find this template at" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">shipwithdjango/examples/templates/examples/credits.html</code>.
+        <br/>{% trans "<b>Where can I find the backend logic of this page?</b> You can find the view" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">CreditsExample</code> {% trans "at" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">shipwithdjango/examples/views.py</code>.
+    </p>
+    </div>
+</div>
+
+<div class="bg-white shadow-sm border rounded-2xl p-8">
+    <div class="flex flex-col items-center justify-center">
+        <div class="w-24 h-24 bg-primary-light rounded-full flex items-center justify-center mb-4 text-primary">
+            <i data-feather="box"></i>
+        </div>
+        <h3 class="text-lg font-semibold mb-2">{% trans "Consume credits" %}</h3>
+        <p class="text-gray-600 text-center mb-6">
+            {% trans "You can easily integrate a credit system in your platform. Users can buy credits and use them for a variety of actions." %}
+            <br/>{% trans "Users can check and top up their balance on the 'Billing' page." %}
+        </p>
+        <p class="text-gray-600 text-center mb-6">
+            {% trans "When a user performs an action, you can deduct credits and log the transaction." %}
+            <br/>{% trans "Be sure to set your billing configuration first in" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">CONFIG/billing.py</code>.
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.amount.as_field_group }}
+            {{ form.action.as_field_group }}
+            <button type="submit" class="w-full bg-primary text-white py-2 rounded-2xl focus:outline-none font-semibold">{% trans "Consume credits" %}</button>
+        </form>
+    </div>
+</div>
+
+<div class="mt-12 bg-white shadow-sm border rounded-2xl group">
+    <div class="flex items-center justify-between p-4 border-b">
+        <h2 class="text-lg font-semibold flex items-center">
+            {% trans "Your credit actions" %}
+        </h2>
+    </div>
+    <div class="p-4">
+        <table class="dynamic" data-url="{% url 'billing:credit_actions_table' %}"></table>
+    </div>
+</div>
+
+<div class="mt-12 bg-white shadow-sm border rounded-2xl p-8">
+    <div class="flex flex-col items-center justify-center">
+        <h3 class="text-lg font-semibold mb-2">{% trans "Perform an action" %}</h3>
+        <p class="text-gray-600 text-center mb-6">
+            {% trans "Click on the buttons below to perform an action that will consume credits." %}
+        </p>
+
+        <div class="flex gap-3">
+            <button @click="$dispatch('opendynamicmodal', { 'url' : '{% url "examples:credits_action_post" %}' })" class="bg-primary text-white px-4 py-2 rounded-2xl focus:outline-none text-sm font-semibold block text-center lg:inline-block">
+                {% trans "Perform action on POST" %}
+            </button>
+
+            <a href="{% url "examples:credits_action_get" %}" class="bg-primary text-white px-4 py-2 rounded-2xl focus:outline-none text-sm font-semibold block text-center lg:inline-block">
+                {% trans "Perform action on GET" %}
+            </a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

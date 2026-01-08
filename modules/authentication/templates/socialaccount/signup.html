@@ -1,0 +1,31 @@
+{% extends "layout/bare.html" %}
+
+{% load i18n %}
+{% load socialaccount %}
+
+{% block title %}{% trans "Sign up" %}{% endblock %}
+
+{% block content %}
+
+<h2 class="text-2xl font-bold">{% trans "Sign up" %}</h2>
+<p class="text-slate-500">
+    {% blocktrans with provider_name=account.get_provider.name site_name=site.name %}You are about to use your {{provider_name}} account to login. As a final step, please complete the following form:{% endblocktrans %}
+</p>
+
+{% include 'components/alerts.html' %}
+{% include 'components/forms/errors.html' %}
+
+<form method="post" class="mt-6" action="{% url 'socialaccount_signup' %}">
+    {% csrf_token %}
+    {{ redirect_field }}
+
+    {{ form.email.as_field_group }}
+    <button type="submit" class="w-full bg-primary text-white py-2 rounded-2xl focus:outline-none font-bold">{% trans "Continue" %}</button>
+</form>
+<div class="flex items-center justify-center mt-6">
+    <p class="text-center"><a href="{% url 'authentication:login' %}" class="text-primary font-medium inline-flex space-x-1 items-center"><span>{% trans 'Go back to login' %} </span><span><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+    </svg></span></a></p>
+</div>
+
+{% endblock %}

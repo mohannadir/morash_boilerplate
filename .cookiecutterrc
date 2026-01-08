@@ -1,0 +1,16 @@
+# CookieCutter configuration file
+# This file can be used to set default values for cookiecutter variables
+# Users can create this file in their home directory to set defaults
+
+default_context:
+    project_name: "myproject"
+    platform_name: "My Django Platform"
+    platform_tagline: "A Django Boilerplate"
+    platform_version: "1.0.0"
+    platform_url: "http://127.0.0.1:8000"
+    main_app_name: "main"
+    database_name: "modules"
+    author_name: "Your Name"
+    author_email: "your.email@example.com"
+    python_version: "3.10"
+    django_version: "5.0.2"

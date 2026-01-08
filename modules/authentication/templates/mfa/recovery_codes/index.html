@@ -1,0 +1,70 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Recovery codes" %}{% endblock %}
+
+{% block subnav %}
+    {% with active='settings' %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+
+<nav class="inline-flex items-center space-x-2 text-gray-600 bg-white border rounded-md mb-6">
+    <!-- Icon -->
+    <a href="{% url 'authentication:user_settings' %}" class="flex items-center space-x-1 py-2 pl-2 group">
+        <i class=" text-default group-hover:text-primary" data-feather="settings" width="14px" height="14px"></i>
+        <span class="text-sm text-default group-hover:text-primary">{% trans "Settings" %}</span>
+    </a>
+    <!-- Separator -->
+    <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M10.293 15.293a1 1 0 010-1.414L13.586 10 10.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+    </svg>
+    <!-- Link -->
+    <a href="{% url 'authentication:user_settings' %}" class="flex items-center space-x-1 py-2 pl-2 group">
+        <i class=" text-default group-hover:text-primary" data-feather="lock" width="14px" height="14px"></i>
+        <span class="text-sm text-default group-hover:text-primary">{% trans "Two-factor authentication" %}</span>
+    </a>
+    <!-- Separator -->
+    <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M10.293 15.293a1 1 0 010-1.414L13.586 10 10.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+    </svg>
+    <!-- Link -->
+    <a href="#" class="text-default font-medium text-sm py-2 pr-2">{% trans "Recovery codes" %}</a>
+</nav>
+
+<div class="mb-6">
+    <div class="flex items-center">
+        <i class="text-2xl text-gray-700 mr-2" data-feather="lock"></i>
+        <h1 class="text-2xl font-semibold text-default">{% trans "Recovery codes" %}</h1>
+    </div>
+</div>
+
+<div class="my-6 bg-white shadow-sm border rounded-2xl">
+    <div class="p-7">
+        <h3 class="text-lg font-semibold mb-2 text-center">{% trans "Recovery codes" %}</h3>
+        <div class="text-center text-sm text-gray-600 mb-4">
+            {% blocktrans %}You can use these recovery codes to access your account if you lose access to your authenticator app.{% endblocktrans %}
+            <br/><span class="text-red-500 font-semibold">{% trans "Please store these codes in a safe place and NEVER share them with anyone else." %}</span>
+            <br/><br/>{% blocktranslate count unused_count=unused_codes|length %}There is {{ unused_count }} out of {{ total_count }} recovery codes available.{% plural %}There are {{ unused_count }} out of {{ total_count }} recovery codes available.{% endblocktranslate %}
+        </div>
+        <div class="text-center">
+            <ul class="text-sm text-gray-600">
+                {% for code in unused_codes %}
+                    <li>{{ code }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="flex items-center justify-center p-4 border-t gap-3">
+        <a href="{% url 'mfa_download_recovery_codes' %}" class="bg-primary text-white px-4 py-2 rounded-2xl focus:outline-none">
+            {% trans "Download codes" %}
+        </a>
+        <a href="{% url 'mfa_generate_recovery_codes' %}" class="bg-primary text-white px-4 py-2 rounded-2xl focus:outline-none">
+            {% trans "Generate new codes" %}
+        </a>
+    </div>
+</div>
+
+{% endblock %}

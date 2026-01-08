@@ -1,0 +1,36 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Two-factor authentication" %}{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+    <div class="flex items-center">
+        <i class="text-2xl text-gray-700 mr-2" data-feather="lock"></i>
+        <h1 class="text-2xl font-semibold text-default">{% trans "Two-factor authentication" %}</h1>
+    </div>
+</div>
+
+<form method="post" action="{% url 'mfa_reauthenticate' %}">
+    {% csrf_token %}
+
+    <div class="my-6 bg-white shadow-sm border rounded-2xl">
+        <div class="p-7">
+            <h3 class="text-lg font-semibold mb-2 text-center">{% trans "Your account is protected by two-factor authentication" %}</h3>
+            <div class="text-center text-sm text-gray-600 mb-4">
+                {% blocktrans %}Enter the code from your authenticator app to confirm your identity.{% endblocktrans %}
+            </div>
+            <div class="my-3">
+                {{ form.code.as_field_group }}
+            </div>
+        </div>
+        <div class="flex items-center justify-between p-4 border-t">
+            <button type="submit" class="bg-primary text-white px-4 py-2 rounded-2xl focus:outline-none">
+                {% trans "Confirm" %}
+            </button>
+        </div>
+    </div>
+</form>
+
+{% endblock %}

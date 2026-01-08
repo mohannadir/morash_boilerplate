@@ -1,0 +1,56 @@
+{% extends "layout/base.html" %}
+{% load utils %}
+{% load i18n %}
+
+{% block title %}{% trans "Billing" %}{% endblock %}
+
+{% block subnav %}
+    {% with active='billing' %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+
+
+<div class="mb-6">
+    <div class="flex items-center">
+        <i class="text-2xl text-gray-700 mr-2" data-feather="credit-card"></i>
+        <h1 class="text-2xl font-semibold text-default">{% trans "Billing" %}</h1>
+    </div>
+</div>
+
+{% if billing_model == 'subscriptions' %}
+    {% include 'billing/subscriptions/page_content.html' %}
+{% elif billing_model == 'credits' %}
+    {% include 'billing/credits/page_content.html' %}
+{% elif billing_model == 'both' %}
+<div x-data="{ openTab: 'subscriptions' }">
+    <div class="mb-4 flex bg-white border shadow-sm rounded-2xl">
+        <button x-on:click="openTab = 'subscriptions'" :class="{ 'bg-primary-light text-primary font-semibold': openTab === 'subscriptions' }" class="flex-1 py-2 px-4 focus:outline-none focus:shadow-outline-blue transition-all duration-300">{% trans "Your subscription" %}</button>
+        <button x-on:click="openTab = 'credits'" :class="{ 'bg-primary-light text-primary font-semibold': openTab === 'credits' }" class="flex-1 py-2 px-4 focus:outline-none focus:shadow-outline-blue transition-all duration-300">{% trans "Your credits" %}</button>
+    </div>
+
+    <div x-show="openTab === 'subscriptions'" class="transition-all duration-300">
+        {% include 'billing/subscriptions/page_content.html' %}
+    </div>
+
+    <div x-show="openTab === 'credits'" class="transition-all duration-3000">
+        {% include 'billing/credits/page_content.html' %}
+    </div>
+</div>
+{% endif %}
+
+<div class="mt-12 bg-white shadow-sm border rounded-2xl group">
+    <div class="flex items-center justify-between p-4 border-b">
+        <h2 class="text-lg font-semibold flex items-center">
+            {% trans "Your invoices" %}
+        </h2>
+    </div>
+    <div class="p-4">
+        <table class="dynamic" data-url="{% url 'billing:invoice_table' %}"></table>
+    </div>
+
+</div>
+
+{% endblock %}

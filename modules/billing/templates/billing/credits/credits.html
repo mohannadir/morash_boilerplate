@@ -1,0 +1,35 @@
+{% extends "layout/base.html" %}
+{% load utils %}
+{% load i18n %}
+
+{% block title %}{% trans "Billing" %}{% endblock %}
+
+{% block subnav %}
+    {% with active='billing' %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+    <div class="flex items-center">
+        <i class="text-2xl text-gray-700 mr-2" data-feather="credit-card"></i>
+        <h1 class="text-2xl font-semibold text-default">{% trans "Billing" %}</h1>
+    </div>
+</div>
+
+{% include 'billing/credits/page_content.html' %}
+
+<div class="mt-12 bg-white shadow-sm border rounded-2xl group">
+    <div class="flex items-center justify-between p-4 border-b">
+        <h2 class="text-lg font-semibold flex items-center">
+            {% trans "Your invoices" %}
+        </h2>
+    </div>
+    <div class="p-4">
+        <table class="dynamic" data-url="{% url 'billing:invoice_table' %}"></table>
+    </div>
+</div>
+
+{% endblock %}

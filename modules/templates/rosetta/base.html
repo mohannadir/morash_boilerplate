@@ -1,0 +1,96 @@
+{% extends 'unfold/layouts/skeleton.html' %}
+
+{% load i18n unfold tailwind_tags %}
+{% block title %}
+    {% block pagetitle %}Translation Management{% endblock %}
+{% endblock %}
+
+{% block extrahead %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script type="text/javascript">
+    {% include 'rosetta/js/rosetta.js' %}
+</script>
+{% tailwind_css %}
+{% block extra_styles %}{% endblock %}
+{% endblock %}
+
+
+
+{% block base %}
+    <div id="page" class="flex min-h-screen">
+        {% block nav-sidebar %}
+            {% include "rosetta/nav_sidebar.html" %}
+        {% endblock %}
+
+        <div id="main" class="flex-grow min-w-0">
+                {% if not is_popup %}
+                    {% block header %}
+                        <div class="border-b border-gray-200 mb-6 px-4 lg:px-12 dark:border-gray-800">
+                            <div class="container flex items-center h-16 mx-auto py-4">
+                                <div id="header-inner" class="flex items-center w-full">
+                                    <div class="flex items-center w-full">
+                                        <div class="flex-grow font-medium min-w-0 mr-3">
+                                            <h1 class="overflow-hidden text-ellipsis text-sm whitespace-nowrap xl:text-base text-gray-700 dark:text-gray-200">
+                                                {% block headertitle %}{% endblock%}
+                                            </h1>
+                                        </div>                                        
+
+                                        {% include 'unfold/helpers/userlinks.html' %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endblock %}
+            {% endif %}        
+
+
+            <div class="px-4 lg:px-12">
+                <div class="container mb-12 mx-auto -my-3">
+                    <ul class="flex">
+                        {% url 'rosetta-file-list' po_filter=po_filter as link %}
+                        {% trans 'Home' as name %}
+                        <li class="text-gray-500 text-xs dark:text-gray-400">
+                            {% if link %}
+                                <a href="{{ link }}">{{ name }}</a> <span class="mx-2 text-gray-200 dark:text-gray-600">/</span>
+                            {% else %}
+                                {{ name }}
+                            {% endif %}
+                        </li>                                    
+                        {% block custom_breadcrumbs %}{% endblock %}
+                    </ul>
+                    {% if do_session_warn %}<p class="errornote session-warn">{% trans "Couldn't load the specified language file. This usually happens when using the Encrypted Cookies Session Storage backend on Django 1.4 or higher.<br/>Setting ROSETTA_STORAGE_CLASS = 'rosetta.storage.CacheRosettaStorage' in your settings file should fix this." %}</p>{% endif %}
+                </div>
+            </div>
+
+            {% block messages %}
+                <div class="px-4 lg:px-12">
+                    <div class="container mx-auto">
+                        {% include "unfold/helpers/messages.html" %}
+                    </div>
+                </div>
+            {% endblock messages %}
+
+            <div class="px-4 pb-12 lg:px-12">
+                <div id="content" class="container mx-auto {% block coltype %}colM{% endblock %}">
+                    {% if cl %}
+                        {% tab_list cl.opts %}
+                    {% elif opts %}
+                        {% tab_list opts %}
+                    {% endif %}
+
+                    {% block content %}
+                        {% block main %}
+                            {% block object-tools %}{% endblock %}
+
+                            {{ content }}
+                        {% endblock %}
+                    {% endblock %}
+
+                    {% block sidebar %}{% endblock %}
+                </div>
+            </div>
+
+            {% block footer %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

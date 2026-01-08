@@ -1,0 +1,62 @@
+{% extends "layout/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Dynamic tables" %}{% endblock %}
+
+{% block subnav %}
+    {% with active='example_tables' %}
+        {{ block.super }}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-6">
+    <div class="flex items-center">
+        <i class="text-2xl text-gray-700 mr-2" data-feather="table"></i>
+        <h1 class="text-2xl font-semibold text-default">{% trans "Dynamic tables" %}</h1>
+    </div>
+    <div>
+    <p class="text-gray-500">
+        {% trans "Fetch data from your server and populate tables." %}
+        <br/>{% trans "<b>Where can I find the template of this page?</b> You can find this template at" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">shipwithdjango/examples/templates/examples/tables/tables.html</code>.
+        <br/>{% trans "<b>Where can I find the backend logic of this page?</b> You can find the view" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">ExampleModelTable</code> {% trans "at" %} <code class="bg-gray-100 text-gray-700 p-1 rounded-2xl">shipwithdjango/examples/views.py</code>.
+    </p>
+    </div>
+</div>
+
+<div class="bg-white shadow-sm border rounded-2xl p-8">
+    <div class="flex flex-col items-center justify-center">
+        <div class="w-24 h-24 bg-primary-light rounded-full flex items-center justify-center mb-4 text-primary">
+            <i data-feather="table"></i>
+        </div>
+        <h3 class="text-lg font-semibold mb-2">{% trans "Fetch data from your server and populate tables" %}</h3>
+        <p class="text-gray-600 text-center mb-6">
+            {% trans "This page demonstrates how to fetch data from your server and populate tables using a custom-made JavaScript library." %}
+            <br/>{% trans "It is made to be light-weight and offers functions such as sorting, filtering, and pagination." %}
+        </p>
+        <p class="text-gray-600 text-center mb-6 font-bold">
+            {% trans "No example data present?" %}
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="bg-primary text-white px-4 py-2 rounded-2xl focus:outline-none text-sm font-semibold block text-center lg:inline-block">{% trans "Seed example data" %}</button>
+            </form>
+        </p>
+    </div>
+</div>
+
+
+
+<div class="mt-12 bg-white shadow-sm border rounded-2xl group">
+    <div class="flex items-center justify-between p-4 border-b">
+        <h2 class="text-lg font-semibold flex items-center">
+            {% trans "Your dynamic table" %}
+        </h2>
+    </div>
+    <div class="p-4">
+        <table class="dynamic" data-url="{% url 'examples:tables_data' %}"></table>
+    </div>
+</div>
+
+
+{% endblock %}

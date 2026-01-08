@@ -1,0 +1,39 @@
+{% load i18n %}
+
+<thead class="border-b">
+    <tr>
+        <th class="p-2 text-left">
+            <span class="text-xs text-default">{% trans "Name" %}</span>
+        </th>
+        <th class="p-2 text-left">
+            <span class="text-xs text-default">{% trans "Address" %}</span>
+        </th>
+        <th class="p-2">
+            <span class="text-xs text-default">{% trans "Note" %}</span>
+        </th>
+    </tr>
+</thead>
+<tbody>
+    {% for example in example_models %}
+    <tr class="border-b hover:bg-gray-50">
+        <td class="p-2">
+            <span class="text-base text-default">{{ example.name }}</span>
+        </td>
+        <td class="p-2">
+            <span class="text-base text-default">{{ example.address }}</span>
+        </td>
+        <td class="p-2 flex">
+            <span class="text-base text-default">{{ example.note }}</span>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td class="p-3" colspan="3">
+            <div class="flex justify-center">
+                <i class="text-6xl text-gray-600" data-feather="info"></i>
+                &nbsp;&nbsp;<span class="text-gray-600">{% trans "No examples found" %}</span>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
