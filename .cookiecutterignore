@@ -1,8 +1,20 @@
 # Ignore Django template files - they use Django template syntax, not Jinja2
 # These files should be processed by Django's template engine, not cookiecutter's Jinja2
+# Use comprehensive patterns to catch all HTML files
+
+# Match all HTML files at any level
 *.html
 **/*.html
+
+# Match HTML files in templates directories
+templates/**/*.html
 **/templates/**/*.html
+
+# Match HTML files in the main app templates (with cookiecutter variable in path)
+**/templates/**/*.html
+
+# Match all HTML files in any subdirectory
+**/**/*.html
 
 # Ignore migration files - they're auto-generated
 **/migrations/*.py
