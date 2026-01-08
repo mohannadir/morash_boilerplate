@@ -68,6 +68,8 @@ A comprehensive Django project template with authentication, billing, payments, 
    - `author_name`: Your name
    - `author_email`: Your email
 
+   **Note:** If you encounter a `TemplateSyntaxError` about Django templates, this is normal. The `.cookiecutterignore` file excludes Django template files (`.html`) from cookiecutter processing since they use Django's template syntax, not Jinja2. See `COOKIECUTTER_TROUBLESHOOTING.md` for more details.
+
 4. **Important**: After generation, if directories weren't automatically renamed:
    - Rename the `base` directory to your `project_slug` (from cookiecutter prompt)
    - Rename the `main` directory to your `main_app_name` (from cookiecutter prompt)

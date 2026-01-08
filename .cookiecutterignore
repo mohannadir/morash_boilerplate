@@ -1,0 +1,58 @@
+# Ignore Django template files - they use Django template syntax, not Jinja2
+# These files should be processed by Django's template engine, not cookiecutter's Jinja2
+*.html
+**/*.html
+**/templates/**/*.html
+
+# Ignore migration files - they're auto-generated
+**/migrations/*.py
+!**/migrations/__init__.py
+
+# Ignore compiled Python files
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Ignore virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+*.log
+logs/
+
+# Ignore static/media files
+static/
+media/
+staticfiles/
+
+# Ignore database files
+*.db
+*.sqlite3
+
+# Ignore environment files
+.env
+.env.local
+
+# Ignore secrets
+.secrets/
+
+# Ignore node modules
+node_modules/
+
+# Ignore build artifacts
+build/
+dist/
+*.egg-info/
