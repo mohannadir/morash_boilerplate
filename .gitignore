@@ -41,7 +41,7 @@ db.sqlite3-journal
 /staticfiles
 
 # Environment variables
-.env
+.env.example
 .env.local
 .env.*.local
 
@@ -82,3 +82,6 @@ htmlcov/
 
 # Docker
 *.pid
+
+
+demo/

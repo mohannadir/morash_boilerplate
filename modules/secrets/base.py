@@ -25,7 +25,7 @@ class SecretManager:
         """ Returns the value of a secret. Raises an exception if the secret is not found.
             If default is provided, it will be returned instead of raising an exception.
 
-            The secret is first checked in the cache, then in the .env file, then in the external provider (if any)
+            The secret is first checked in the cache, then in the .env.example file, then in the external provider (if any)
         """
 
         if secret_name in self.secrets:
@@ -41,7 +41,7 @@ class SecretManager:
             return secret
         
     def get_secret_from_env_file(self, secret_name):
-        """ Returns the value of a secret from the .env file. """
+        """ Returns the value of a secret from the .env.example file. """
         
         secret = config(secret_name, None)
         if secret is not None:

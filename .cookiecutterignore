@@ -70,3 +70,9 @@ node_modules/
 build/
 dist/
 *.egg-info/
+
+# Ignore old directories that conflict with cookiecutter variables
+# These should not be in the template
+main/
+demo/
+base/

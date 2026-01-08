@@ -1,7 +1,7 @@
 
 # Determines which service to use for secrets management. Values can be 'infisical', 'aws', 'azure' or 'env'.
-# If 'env' is used, secrets will be read from the .env file.
-# NOTE: When requesting a secret using the secrets manager, the manager will ALWAYS look at the .env file first and return the value if it exists.
+# If 'env' is used, secrets will be read from the .env.example file.
+# NOTE: When requesting a secret using the secrets manager, the manager will ALWAYS look at the .env.example file first and return the value if it exists.
 # If it does not exist, only then it will look at the configured external service (if any). This is to easily override secrets for local development or testing.
 
 SECRETS_MANAGER = 'env' 
